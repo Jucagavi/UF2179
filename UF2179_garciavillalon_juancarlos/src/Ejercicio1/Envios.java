@@ -13,6 +13,7 @@ import java.awt.Font;
 import javax.swing.JTextField;
 import java.awt.Color;
 import javax.swing.JCheckBox;
+import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JRadioButton;
 import javax.swing.JComboBox;
@@ -30,6 +31,9 @@ public class Envios extends JFrame {
 	private final ButtonGroup GrupoDestino = new ButtonGroup();
 	private JTextField textPeso;
 	private JComboBox comboBox;
+	private JRadioButton rdbtNacional1;
+	private JRadioButton rdbtNacional2;
+
 
 	/**
 	 * Launch the application.
@@ -74,7 +78,7 @@ public class Envios extends JFrame {
 		contentPane.add(textOrigen, "cell 3 2,growx");
 		textOrigen.setColumns(10);
 		
-		JRadioButton rdbtNacional1 = new JRadioButton("Nacional");
+		rdbtNacional1 = new JRadioButton("Nacional");
 		rdbtNacional1.setSelected(true);
 		GrupoOrigen.add(rdbtNacional1);
 		contentPane.add(rdbtNacional1, "flowx,cell 3 3");
@@ -90,7 +94,7 @@ public class Envios extends JFrame {
 		GrupoOrigen.add(rdbtExtranjero1);
 		contentPane.add(rdbtExtranjero1, "cell 3 3");
 		
-		JRadioButton rdbtNacional2 = new JRadioButton("Nacional");
+		rdbtNacional2 = new JRadioButton("Nacional");
 		rdbtNacional2.setSelected(true);
 		GrupoDestino.add(rdbtNacional2);
 		contentPane.add(rdbtNacional2, "flowx,cell 3 5");
@@ -127,25 +131,29 @@ public class Envios extends JFrame {
 
 	protected void calcular() {
 		if (textOrigen.getText()==null || textOrigen.getText().isBlank() ||
-				textDestino.getText()==null || textDestino.getText().isBlank()) {
-					JOptionPane.showMessageDialog(null, "Debe introducir los datos.", 
+				textDestino.getText()==null || textDestino.getText().isBlank() ||
+				textPeso.getText()==null || textPeso.getText().isBlank()) {
+					JOptionPane.showMessageDialog(this, "Debe introducir los datos.", 
 						"Error", JOptionPane.WARNING_MESSAGE);
 					return;
 			}
 		String corigen = textOrigen.getText();
 		String cdestino = textDestino.getText();
 		String tipo = (String) comboBox.getSelectedItem();
-		String peso = textPeso.getText();
+		int peso = Integer.parseInt(textPeso.getText());
 		int tipo2 = comboBox.getSelectedIndex();
-
-		int importebase =0, recargo=0;
 		
-//		if (GrupoOrigen.getSelection().getActionCommand().equals(
-//				GrupoDestino.getSelection().getActionCommand())) {
-//			importebase=4;
-//		} else {
-//			importebase=7;
-//		}
+		if (peso<1 || peso>40) {
+			JOptionPane.showMessageDialog(this, "El peso debe ser entre 1 y 40 kgs.", 
+					"Error", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		double importebase=7;
+		double recargo=0;
+		
+		if (rdbtNacional1.isSelected() && rdbtNacional2.isSelected()) {	
+			importebase=4;
+		} 
 		
 		if (tipo2==0) {
 			recargo = 5;
@@ -153,9 +161,13 @@ public class Envios extends JFrame {
 			recargo = 2;
 		}
 		
-		int importe=importebase+recargo;
+		double valor=peso/10;
+		valor=valor*3.5;
+		recargo=recargo+valor;
+		
+		double importe=importebase+recargo;
 		JOptionPane.showMessageDialog(null,"Origen: "+corigen+"\n"+"Destino: "+
-				cdestino+"\n"+"Tipo: "+tipo+"\n"+"Peso: "+peso+"\n"+"Importe: "+importe, "Cálculo", 1);
+				cdestino+"\n"+"Tipo: "+tipo+"\n"+"Peso: "+peso+"\n"+"Importe: "+importe+"€", "Cálculo", 1);
 		
 	}
 
